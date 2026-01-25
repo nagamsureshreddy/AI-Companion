@@ -1,62 +1,90 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const cors = require('cors');
-const helmet = require('helmet');
-const dotenv = require('dotenv');
+require('dotenv').config();
 const connectDB = require('./config/database');
+const errorHandler = require('./middleware/errorHandler');
+const logger = require('./utils/logger');
 
-// Load environment variables
-dotenv.config();
-
-// Initialize express app
 const app = express();
 
-// Connect to MongoDB
+// Connect to database
 connectDB();
 
 // Middleware
-app.use(helmet()); // Security headers
+const allowedOrigins = [
+  process.env.CLIENT_URL || 'http://localhost:5000',
+  'http://localhost:5000',
+  'http://localhost:3000',
+];
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3000',
-  credentials: true
+  origin: (origin, callback) => {
+    // allow requests with no origin (like mobile apps, curl, postman)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+  optionsSuccessStatus: 200,
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Request logging middleware
+if (process.env.NODE_ENV === 'development') {
+  app.use((req, res, next) => {
+    logger.debug(`${req.method} ${req.path}`);
+    next();
+  });
+}
+
 // Routes
-app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/users', require('./routes/userRoutes'));
-app.use('/api/ai', require('./routes/aiRoutes'));
-app.use('/api/favorites', require('./routes/favoriteRoutes'));
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'API is running!',
+    version: '1.0.0',
+    endpoints: {
+      health: '/api/health',
+      users: '/api/users',
+      books: '/api/books',
+    },
+  });
+});
 
-// Health check route
 app.get('/api/health', (req, res) => {
-  res.status(200).json({ 
-    status: 'success',
-    message: 'Server is running',
-    timestamp: new Date().toISOString()
+  res.json({ 
+    status: 'OK', 
+    database: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
   });
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(err.status || 500).json({
-    status: 'error',
-    message: err.message || 'Internal Server Error'
-  });
-});
+// Import routes
+const userRoutes = require('./routes/userRoutes');
+const bookRoutes = require('./routes/bookRoutes');
+const generateRoutes = require('./routes/generateRoutes');
+const bookImageRoutes = require('./routes/bookImageRoutes');
+app.use('/api/users', userRoutes);
+app.use('/api/books', bookRoutes);
+app.use('/api/generate', generateRoutes);
+app.use('/api/books', bookImageRoutes); // image upload/serve
 
-// 404 handler
+// Error handling middleware (must be after routes)
+app.use(errorHandler);
+
+// 404 handler (must be after all routes)
 app.use((req, res) => {
-  res.status(404).json({
-    status: 'error',
-    message: 'Route not found'
+  res.status(404).json({ 
+    success: false,
+    message: 'Route not found' 
   });
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 app.listen(PORT, () => {
-  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  logger.success(`Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
 });
 

@@ -2,22 +2,54 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
-    // Check if MONGODB_URI is defined
-    if (!process.env.MONGODB_URI) {
-      console.warn('⚠️  MONGODB_URI is not defined in .env file');
-      console.warn('⚠️  Please add your MongoDB connection string to continue');
-      return;
-    }
+    const conn = await mongoose.connect(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
 
-    const conn = await mongoose.connect(process.env.MONGODB_URI);
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
 
-    console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
+    // Handle connection events
+    mongoose.connection.on('error', (err) => {
+      console.error('MongoDB connection error:', err);
+    });
+
+    mongoose.connection.on('disconnected', () => {
+      console.log('MongoDB disconnected');
+    });
+
+    // Graceful shutdown
+    process.on('SIGINT', async () => {
+      await mongoose.connection.close();
+      console.log('MongoDB connection closed through app termination');
+      process.exit(0);
+    });
+
+    return conn;
   } catch (error) {
-    console.error(`❌ Error connecting to MongoDB: ${error.message}`);
-    // Don't exit the process, just log the error
-    console.log('Server will continue running without database connection');
+    console.error('Error connecting to MongoDB:', error.message);
+    process.exit(1);
   }
 };
 
 module.exports = connectDB;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

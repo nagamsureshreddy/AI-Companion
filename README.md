@@ -1,254 +1,216 @@
-# AI Companion
+# Node.js + React.js + MongoDB Full-Stack Application
 
-A full-stack AI application with React frontend, Node.js/Express backend, and MongoDB database.
+A modern full-stack web application built with Node.js, Express, React, and MongoDB.
+
+## 🚀 Features
+
+- **Backend API** - RESTful API with Express.js and Node.js
+- **Frontend UI** - Modern React.js application
+- **Database** - MongoDB with Mongoose ODM
+- **Authentication** - JWT-based authentication
+- **Password Security** - Bcrypt password hashing
+- **Error Handling** - Centralized error handling middleware
+- **CORS** - Cross-origin resource sharing configured
+- **Environment Config** - Environment variable management
+
+## 📋 Prerequisites
+
+- Node.js (v16 or higher)
+- npm or yarn
+- MongoDB (local or Atlas)
+
+## 🛠️ Quick Start
+
+1. **Clone and install dependencies:**
+   ```bash
+   npm run install-all
+   ```
+
+2. **Set up environment variables:**
+   
+   **Backend:** Copy `server/env.example` to `server/.env` and configure:
+   ```env
+   MONGODB_URI=mongodb://localhost:27017/your-database-name
+   JWT_SECRET=your-secret-key
+   PORT=5001
+   CLIENT_URL=http://localhost:5000
+   ```
+   
+   **Frontend:** Copy `client/env.example` to `client/.env` and configure:
+   ```env
+   REACT_APP_API_URL=http://localhost:5001
+   ```
+
+3. **Start MongoDB** (if using local):
+   ```bash
+   # Windows
+   net start MongoDB
+   
+   # macOS
+   brew services start mongodb-community
+   
+   # Linux
+   sudo systemctl start mongod
+   ```
+
+4. **Run the application:**
+   ```bash
+   npm run dev
+   ```
+
+   This will start:
+   - Backend server on `http://localhost:5001`
+   - React frontend on `http://localhost:5000`
 
 ## 📁 Project Structure
 
 ```
-AI Companion/
-├── client/                 # React Frontend
-│   ├── public/
-│   ├── src/
-│   │   ├── components/    # React components
-│   │   │   ├── Auth/      # Login & Register
-│   │   │   ├── Chat/      # Chat interface
-│   │   │   └── Dashboard/ # Dashboard
-│   │   ├── context/       # React Context (Auth)
-│   │   ├── App.js
-│   │   └── index.js
-│   └── package.json
+├── server/              # Node.js Backend
+│   ├── config/         # Configuration files
+│   ├── controllers/    # Route controllers
+│   ├── middleware/     # Express middleware
+│   ├── models/         # Mongoose models
+│   ├── routes/         # API routes
+│   └── utils/          # Utility functions
 │
-└── server/                # Node.js Backend
-    ├── config/            # Configuration files
-    ├── controllers/       # Route controllers
-    ├── middleware/        # Custom middleware
-    ├── models/            # MongoDB models
-    ├── routes/            # API routes
-    ├── server.js          # Entry point
-    └── package.json
+├── client/             # React Frontend
+│   ├── src/
+│   │   ├── components/ # React components
+│   │   ├── context/    # React Context
+│   │   ├── services/   # API services
+│   │   └── utils/      # Helper functions
+│   └── public/         # Static files
+│
+├── SETUP_GUIDE.md      # Detailed setup instructions
+└── PROJECT_STRUCTURE.md # Project structure documentation
 ```
 
-## 🚀 Features
+## 📚 Documentation
 
-- **User Authentication**: Register, login, and JWT-based authentication
-- **AI Chat Interface**: Beautiful, responsive chat UI
-- **Conversation Management**: Create, view, and manage conversations
-- **User Dashboard**: View all conversations and user profile
-- **MongoDB Integration**: Ready for database connection
-- **Modern UI/UX**: Gradient design with smooth animations
+- **[SETUP_GUIDE.md](./SETUP_GUIDE.md)** - Complete setup and configuration guide
+- **[PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md)** - Detailed project structure documentation
+- **[DATABASE_CONNECTION_GUIDE.md](./DATABASE_CONNECTION_GUIDE.md)** - MongoDB connection methods
 
-## 🛠️ Technologies
+## 🔧 Available Scripts
 
-### Frontend
-- React 18
-- React Router DOM
-- Axios
-- Styled Components
-- React Icons
+### Root Level
+```bash
+npm run install-all    # Install all dependencies
+npm run dev           # Run both server and client concurrently
+npm run server        # Run only backend server
+npm run client        # Run only frontend client
+npm run build         # Build React app for production
+```
 
-### Backend
-- Node.js
-- Express.js
-- DB & Mongoose
-- JWT Authentication
-- Bcrypt for password hashing
-- Helmet for security
-- CORS
-
-## 📦 Installation
-
-### Prerequisites
-- Node.js (v14 or higher)
-- MongoDB account (MongoDB Atlas or local MongoDB)
-- npm or yarn
-
-### Backend Setup
-
-1. Navigate to the server directory:
+### Server
 ```bash
 cd server
+npm start             # Start production server
+npm run dev           # Start development server (nodemon)
 ```
 
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Create a `.env` file in the server directory:
-```bash
-cp .env.example .env
-```
-
-4. Add your MongoDB connection string and other environment variables to `.env`:
-```env
-PORT=5001
-NODE_ENV=development
-MONGODB_URI=your_mongodb_connection_string_here
-JWT_SECRET=your_jwt_secret_key_here
-JWT_EXPIRE=7d
-CLIENT_URL=http://localhost:3000
-```
-
-5. Start the server:
-```bash
-# Development mode with auto-restart
-npm run dev
-
-# Production mode
-npm start
-```
-
-The server will run on `http://localhost:5001`
-
-### Frontend Setup
-
-1. Navigate to the client directory:
+### Client
 ```bash
 cd client
+npm start             # Start React development server
+npm run build         # Build for production
+npm test              # Run tests
 ```
 
-2. Install dependencies:
-```bash
-npm install
-```
+## 🌐 API Endpoints
 
-3. Start the React app:
-```bash
-npm start
-```
-
-The app will run on `http://localhost:3000`
-
-## 🔑 API Endpoints
-
-### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - Login user
-- `GET /api/auth/me` - Get current user (Protected)
-
-### Users
-- `GET /api/users` - Get all users (Admin only)
+### Public Endpoints
+- `GET /api/health` - Health check
+- `POST /api/users/register` - Register new user
+- `POST /api/users/login` - Login user
+- `GET /api/users` - Get all users
 - `GET /api/users/:id` - Get user by ID
-- `PUT /api/users/:id` - Update user
-- `DELETE /api/users/:id` - Delete user (Admin only)
+- `POST /api/users` - Create user
 
-### AI Conversations
-- `GET /api/ai/conversations` - Get all user conversations
-- `POST /api/ai/conversations` - Create new conversation
-- `GET /api/ai/conversations/:id` - Get single conversation
-- `POST /api/ai/conversations/:id/messages` - Send message
-- `DELETE /api/ai/conversations/:id` - Delete conversation
+### Protected Endpoints
+- `GET /api/users/me` - Get current logged-in user (requires JWT token)
 
-## 🔐 Environment Variables
+## 🔐 Authentication
 
-Create a `.env` file in the server directory with these variables:
+The application uses JWT (JSON Web Tokens) for authentication:
 
+1. Register or login to get a JWT token
+2. Include token in Authorization header for protected routes:
+   ```
+   Authorization: Bearer <token>
+   ```
+
+## 🛠️ Tech Stack
+
+### Backend
+- **Node.js** - JavaScript runtime
+- **Express.js** - Web framework
+- **MongoDB** - NoSQL database
+- **Mongoose** - MongoDB ODM
+- **JWT** - Authentication tokens
+- **bcryptjs** - Password hashing
+- **CORS** - Cross-origin requests
+
+### Frontend
+- **React** - UI library
+- **Axios** - HTTP client
+- **React Router** - Routing (ready for use)
+- **Context API** - State management
+
+## 📝 Environment Variables
+
+### Server (`server/.env`)
 ```env
-# Server Configuration
-PORT=5001
 NODE_ENV=development
-
-# MongoDB Connection
-MONGODB_URI=your_mongodb_connection_string
-
-# JWT Configuration
-JWT_SECRET=your_secret_key
+PORT=5001
+MONGODB_URI=mongodb://localhost:27017/your-database-name
+JWT_SECRET=your-secret-key
 JWT_EXPIRE=7d
-
-# CORS
-CLIENT_URL=http://localhost:3000
+CLIENT_URL=http://localhost:5000
+BCRYPT_SALT_ROUNDS=10
 ```
 
-## 🗄️ MongoDB Setup
-
-### Option 1: MongoDB Atlas (Cloud)
-
-1. Go to [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
-2. Create a free account
-3. Create a new cluster
-4. Click "Connect" and get your connection string
-5. Replace `<password>` with your database user password
-6. Add the connection string to your `.env` file
-
-Example:
-```
-MONGODB_URI=mongodb+srv://username:<password>@cluster0.xxxxx.mongodb.net/ai-companion?retryWrites=true&w=majority
+### Client (`client/.env`)
+```env
+REACT_APP_API_URL=http://localhost:5001
+REACT_APP_ENV=development
 ```
 
-### Option 2: Local MongoDB
+## 🐛 Troubleshooting
 
-1. Install MongoDB locally
-2. Start MongoDB service
-3. Use connection string:
-```
-MONGODB_URI=mongodb://localhost:27017/ai-companion
-```
+### MongoDB Connection Issues
+- Verify MongoDB is running
+- Check connection string in `.env`
+- For Atlas: Verify IP whitelist and credentials
 
-## 📱 Usage
+### Port Already in Use
+- Change port in `.env` files
+- Kill process using the port
 
-1. **Register**: Create a new account at `/register`
-2. **Login**: Login with your credentials at `/login`
-3. **Dashboard**: View all your conversations
-4. **New Chat**: Click "New Conversation" to start chatting
-5. **Chat**: Send messages and receive AI responses
+### CORS Errors
+- Verify `CLIENT_URL` matches React app URL
+- Check CORS configuration in `server/server.js`
 
-## 🎨 UI Features
-
-- Beautiful gradient design
-- Smooth animations
-- Responsive layout for mobile and desktop
-- Modern card-based UI
-- Real-time typing indicators
-- Message timestamps
-
-## 🔮 Future Enhancements
-
-- [ ] Integrate with OpenAI GPT API
-- [ ] Add file upload support
-- [ ] Voice input/output
-- [ ] Multi-language support
-- [ ] Dark mode toggle
-- [ ] Export conversations
-- [ ] Share conversations
-- [ ] User settings page
-- [ ] Admin panel
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
+See **[SETUP_GUIDE.md](./SETUP_GUIDE.md)** for detailed troubleshooting.
 
 ## 📄 License
 
-This project is licensed under the ISC License.
+ISC
 
-## 👨‍💻 Developer Notes
+## 🤝 Contributing
 
-- The AI integration is currently a placeholder that echoes messages back
-- To integrate a real AI service (like OpenAI), modify `server/controllers/aiController.js`
-- JWT tokens expire after 7 days (configurable in `.env`)
-- The app includes basic security with Helmet.js and CORS
-- All passwords are hashed using bcrypt before storage
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
 
-## 🆘 Troubleshooting
+## 📧 Support
 
-### MongoDB Connection Issues
-- Ensure your IP is whitelisted in MongoDB Atlas
-- Check your connection string format
-- Verify database user credentials
-
-### CORS Issues
-- Ensure `CLIENT_URL` in `.env` matches your frontend URL
-- Check that the proxy in `client/package.json` points to your backend
-
-### Port Already in Use
-- Change the `PORT` in `.env` to a different port
-- Kill the process using the port: `lsof -ti:5000 | xargs kill`
-
-## 📞 Support
-
-For issues and questions, please open an issue on GitHub.
+For issues or questions:
+1. Check the troubleshooting section in SETUP_GUIDE.md
+2. Review error messages in console
+3. Verify environment variables are set correctly
 
 ---
 
-**Happy Coding! 🚀**
-
+**Happy coding!** 🚀

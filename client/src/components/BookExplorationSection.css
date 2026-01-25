@@ -1,0 +1,157 @@
+.book-exploration-section {
+  padding: 3rem 2rem;
+  background: white;
+}
+
+.section-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.placeholder-rectangle {
+  width: 60px;
+  height: 8px;
+  background: #cbd5e0;
+  border-radius: 4px;
+}
+
+.section-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0;
+}
+
+.books-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.book-card-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.book-placeholder {
+  width: 100%;
+  height: 250px;
+  background: #2d5016;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.book-placeholder.image {
+  object-fit: cover;
+}
+
+.book-title {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin: 0 0 0.5rem 0;
+  min-height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.book-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.book-title a:hover {
+  text-decoration: underline;
+}
+
+.book-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.btn-start-reading-compact,
+.btn-stop-reading-compact {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-start-reading-compact {
+  background: #48bb78;
+  color: white;
+}
+
+.btn-start-reading-compact:hover {
+  background: #38a169;
+}
+
+.btn-stop-reading-compact {
+  background: #ed8936;
+  color: white;
+}
+
+.btn-stop-reading-compact:hover {
+  background: #dd6b20;
+}
+
+.btn-share-compact {
+  padding: 0.4rem 0.8rem;
+  background: #4299e1;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-share-compact:hover {
+  background: #3182ce;
+}
+
+.empty-message {
+  text-align: center;
+  padding: 3rem;
+  color: #718096;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+  .book-exploration-section {
+    padding: 2rem 1rem;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .books-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .book-placeholder {
+    height: 200px;
+  }
+}
+

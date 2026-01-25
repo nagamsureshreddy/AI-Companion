@@ -1,5 +1,6 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import axios from 'axios';
+import React, { createContext, useState, useContext, useEffect } from 'react';
+import { userService } from '../services/api';
+import { getToken, setToken, removeToken } from '../utils/helpers';
 
 const AuthContext = createContext();
 
@@ -13,94 +14,75 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Set axios defaults
+  // Check if user is logged in on mount
   useEffect(() => {
-    if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      loadUser();
-    } else {
+    const checkAuth = async () => {
+      const token = getToken();
+      if (token) {
+        try {
+          const response = await userService.getMe();
+          setUser(response.data);
+          setIsAuthenticated(true);
+        } catch (error) {
+          console.error('Auth check failed:', error);
+          removeToken();
+          setIsAuthenticated(false);
+        }
+      }
       setLoading(false);
-    }
-  }, [token]);
+    };
 
-  // Load user data
-  const loadUser = async () => {
-    try {
-      const res = await axios.get('/api/auth/me');
-      setUser(res.data.data.user);
-    } catch (error) {
-      console.error('Error loading user:', error);
-      logout();
-    } finally {
-      setLoading(false);
-    }
-  };
+    checkAuth();
+  }, []);
 
-  // Login
-  const login = async (email, password) => {
+  const login = async (credentials) => {
     try {
-      const res = await axios.post('/api/auth/login', { email, password });
-      const { token, user } = res.data.data;
-      
-      localStorage.setItem('token', token);
-      setToken(token);
-      setUser(user);
-      
-      return { success: true };
+      const response = await userService.login(credentials);
+      setToken(response.token);
+      setUser(response.data);
+      setIsAuthenticated(true);
+      return { success: true, data: response };
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || 'Login failed'
+        message: error.response?.data?.message || 'Login failed',
       };
     }
   };
 
-  // Register
-  const register = async (name, email, password) => {
+  const register = async (userData) => {
     try {
-      const res = await axios.post('/api/auth/register', { name, email, password });
-      const { token, user } = res.data.data;
-      
-      localStorage.setItem('token', token);
-      setToken(token);
-      setUser(user);
-      
-      return { success: true };
+      const response = await userService.register(userData);
+      setToken(response.token);
+      setUser(response.data);
+      setIsAuthenticated(true);
+      return { success: true, data: response };
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || 'Registration failed'
+        message: error.response?.data?.message || 'Registration failed',
       };
     }
   };
 
-  // Logout
   const logout = () => {
-    localStorage.removeItem('token');
-    delete axios.defaults.headers.common['Authorization'];
-    setToken(null);
+    removeToken();
     setUser(null);
+    setIsAuthenticated(false);
   };
 
   const value = {
     user,
-    token,
     loading,
+    isAuthenticated,
     login,
     register,
     logout,
-    isAuthenticated: !!token && !!user
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
-
-export default AuthContext;
 
