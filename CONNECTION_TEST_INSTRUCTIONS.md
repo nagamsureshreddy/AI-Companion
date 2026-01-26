@@ -31,15 +31,15 @@ node test-connection.js
 Testing MongoDB Connection...
 ==================================================
 
-Connection String: mongodb+srv://SureshNagam:****@cluster0aicompanion.etqq4yl.mongodb.net/...
+Connection String: mongodb+srv://userid:****@cluster0sampledb/...
 Environment: development
 
 ✅ SUCCESS: Database Connected!
 
 Connection Details:
-  - Host: cluster0aicompanion-shard-00-00.etqq4yl.mongodb.net
-  - Port: 27017
-  - Database: AICompanion
+  - Host: samplehost
+  - Port: 12345
+  - Database: sampledb
   - Ready State: Connected
 
 ==================================================
@@ -51,7 +51,7 @@ Connection Details:
 Testing MongoDB Connection...
 ==================================================
 
-Connection String: mongodb+srv://SureshNagam:****@cluster0aicompanion.etqq4yl.mongodb.net/...
+Connection String: sampledb+srv://userid:****@cluster0sampledb/...
 Environment: development
 
 ❌ FAILED: Database Connection Failed!
@@ -74,7 +74,7 @@ npm run dev
 ```
 
 If you see:
-- ✅ `MongoDB Connected: [hostname]` = **SUCCESS**
+- ✅ `sampledb Connected: [hostname]` = **SUCCESS**
 - ❌ `Error connecting to MongoDB: [error]` = **FAILED**
 
 ## Common Issues and Solutions
@@ -93,22 +93,18 @@ If you see:
 ### 3. IP Whitelist Error
 - **Error**: `IP address not whitelisted`
 - **Solution**: 
-  - Go to MongoDB Atlas Dashboard
+  - Go to sampledb Atlas Dashboard
   - Network Access → Add IP Address
   - Add `0.0.0.0/0` for testing (or your specific IP)
 
 ### 4. Connection String Format
-- **Error**: `MongoParseError`
-- **Solution**: Verify `.env` file has correct MONGODB_URI format
+- **Error**: `dbParseError`
+- **Solution**: Verify `.env` file has correct sampledb_URI format
 
 ## Quick Validation
 
 Your `.env` file should contain:
-```
-MONGODB_URI=mongodb+srv://SureshNagam:Fornow%401@cluster0aicompanion.etqq4yl.mongodb.net/AICompanion?retryWrites=true&w=majority&appName=Cluster0AIcompanion
-```
 
-Note: The `%401` in the password is URL encoding for `@` symbol.
 
 
 
