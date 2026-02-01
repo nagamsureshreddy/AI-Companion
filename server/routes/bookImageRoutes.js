@@ -40,25 +40,36 @@ router.post('/:id/image', protect, upload.single('image'), async (req, res) => {
       }
     }
 
+    // Attach metadata so GridFS file records are traceable back to the book
     const uploadStream = bucket.openUploadStream(file.originalname, {
       contentType: file.mimetype,
+      metadata: {
+        bookId: new mongoose.Types.ObjectId(bookId),
+        bookTitle: book.title,
+        uploadedBy: req.user.id,
+      },
     });
 
-    uploadStream.end(file.buffer, async (err, storedFile) => {
-      if (err) {
-        return res.status(500).json({ success: false, message: 'Error uploading image', error: err.message });
-      }
+    uploadStream.on('error', (err) => {
+      return res.status(500).json({ success: false, message: 'Error uploading image', error: err.message });
+    });
 
-      book.imageId = storedFile._id;
+    uploadStream.on('finish', async (storedFile) => {
+      // GridFS returns the stored file info in the finish event; fall back to the stream id if needed
+      const imageId = (storedFile && storedFile._id) ? storedFile._id : uploadStream.id;
+
+      book.imageId = imageId;
       book.imageUrl = `/api/books/${bookId}/image`;
       await book.save();
 
       res.json({
         success: true,
         message: 'Image uploaded',
-        data: { imageId: storedFile._id },
+        data: { imageId },
       });
     });
+
+    uploadStream.end(file.buffer);
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server error', error: error.message });
   }
