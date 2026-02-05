@@ -27,7 +27,7 @@ const GENRES = [
 
 const CreateStoryPage = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     title: '',
