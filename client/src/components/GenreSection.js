@@ -1,34 +1,12 @@
 import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import CreateBook from './CreateBook';
 import './GenreSection.css';
 
-const GENRES = [
-  'Thriller',
-  'Comedy',
-  'History',
-  'Suspense',
-  'Fiction',
-  'Romance',
-  'Mystery',
-  'Fantasy',
-];
-
 const GenreSection = ({ onCreateBook, loading }) => {
-  const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const [selectedGenre, setSelectedGenre] = useState(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
-
-  const handleGenreClick = (genre) => {
-    if (isAuthenticated && user?.role === 'author') {
-      setSelectedGenre(genre);
-      setShowCreateForm(true);
-    } else {
-      alert('Please login as an Author to create books');
-    }
-  };
 
   const handleBookCreated = (bookData, imageFile) => {
     onCreateBook({ ...bookData, genre: selectedGenre }, imageFile);
