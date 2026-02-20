@@ -29,11 +29,14 @@ const BookExplorationSection = ({
               const titleText = book.title || 'Untitled';
               return (
                 <div key={book._id} className="book-card-wrapper">
+                  {book.imageUrl ? (
+                    <img src={book.imageUrl} alt={titleText} className="book-placeholder image" />
+                  ) : (
+                    <div className="book-placeholder"></div>
+                  )}
                   <p className="book-title">
                     <Link to={`/book/${book._id}`}>{titleText}</Link>
                   </p>
-                  <span className="book-mini-genre">{book.genre || 'Genre'}</span>
-                  <Link className="book-open-link" to={`/book/${book._id}`}>Read</Link>
                 </div>
               );
             })}

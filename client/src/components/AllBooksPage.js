@@ -76,6 +76,18 @@ const AllBooksPage = () => {
     });
   };
 
+  const getDescription = (book) => {
+    const desc = (book.shortDescription || '').trim();
+    if (desc) return desc;
+
+    const content = (book.content || '').trim();
+    if (!content) return 'No description yet.';
+
+    // Light teaser without full plot
+    const snippet = content.slice(0, 180);
+    return snippet.length < content.length ? `${snippet}...` : snippet;
+  };
+
   return (
     <div className="App">
       <NewHeader />
@@ -95,12 +107,15 @@ const AllBooksPage = () => {
               const title = book.title || 'Untitled';
               const genre = book.genre || 'Genre';
               const reading = isUserReadingBook(book);
+              const author = book.authorName || book.author?.name || 'Unknown author';
               return (
                 <div key={book._id} className="book-mini-card">
                   <div className="book-mini-header">
                     <h3 className="book-mini-title">{title}</h3>
                     <span className="book-mini-genre">{genre}</span>
                   </div>
+                  <p className="book-mini-desc">{getDescription(book)}</p>
+                  <p className="book-mini-author">By {author}</p>
                   <div className="book-mini-actions">
                     <button
                       className="btn-mini"

@@ -41,6 +41,7 @@ const BookDetailPage = () => {
               <img src={book.imageUrl} alt={book.title} className="detail-image" />
             </div>
           )}
+          <p className="detail-author">By {book.authorName || book.author?.name || 'Unknown author'}</p>
         </section>
         <section className="detail-body">
           {book.shortDescription && (
