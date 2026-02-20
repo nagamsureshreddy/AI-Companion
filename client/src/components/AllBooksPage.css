@@ -1,0 +1,96 @@
+.all-books-main {
+  padding: 2rem 1.5rem 3rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.all-books-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.all-books-hero h1 {
+  margin: 0;
+}
+
+.all-books-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.book-mini-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1rem;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+.book-mini-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.book-mini-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.book-mini-genre {
+  background: #eef2ff;
+  color: #3b4cca;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.book-mini-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-mini {
+  padding: 0.45rem 0.9rem;
+  border-radius: 6px;
+  border: 1px solid #d0d7de;
+  background: #f6f8fa;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-mini:hover {
+  background: #eaeef2;
+  border-color: #c2cbd3;
+}
+
+.btn-mini.primary {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: #fff;
+}
+
+.btn-mini.primary:hover {
+  background: #2563eb;
+  border-color: #2563eb;
+}
+
+.btn-mini.ghost {
+  background: #fff;
+}
+
+.empty-message {
+  text-align: center;
+  color: #666;
+}

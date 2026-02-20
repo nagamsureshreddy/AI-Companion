@@ -17,6 +17,7 @@ const BookExplorationSection = ({
         <div className="section-header">
           <div className="placeholder-rectangle"></div>
           <h2 className="section-title">Explore the list of books to read</h2>
+          <Link to="/books" className="explore-all-link">Explore all</Link>
         </div>
         {loading && books.length === 0 ? (
           <Loading message="Loading books..." />
@@ -28,14 +29,11 @@ const BookExplorationSection = ({
               const titleText = book.title || 'Untitled';
               return (
                 <div key={book._id} className="book-card-wrapper">
-                  {book.imageUrl ? (
-                    <img src={book.imageUrl} alt={titleText} className="book-placeholder image" />
-                  ) : (
-                    <div className="book-placeholder"></div>
-                  )}
                   <p className="book-title">
                     <Link to={`/book/${book._id}`}>{titleText}</Link>
                   </p>
+                  <span className="book-mini-genre">{book.genre || 'Genre'}</span>
+                  <Link className="book-open-link" to={`/book/${book._id}`}>Read</Link>
                 </div>
               );
             })}

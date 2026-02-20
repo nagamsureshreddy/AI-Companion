@@ -9,6 +9,7 @@ import BookExplorationSection from './components/BookExplorationSection';
 import TestimonialsSection from './components/TestimonialsSection';
 import CreateStoryPage from './components/CreateStoryPage';
 import BookDetailPage from './components/BookDetailPage';
+import AllBooksPage from './components/AllBooksPage';
 import { bookService } from './services/api';
 import { getErrorMessage } from './utils/helpers';
 import './App.css';
@@ -159,6 +160,7 @@ function App() {
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/create-story" element={<CreateStoryPage />} />
+          <Route path="/books" element={<AllBooksPage />} />
           <Route path="/book/:id" element={<BookDetailPage />} />
         </Routes>
       </Router>
