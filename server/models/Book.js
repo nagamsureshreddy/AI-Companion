@@ -54,7 +54,6 @@ const bookSchema = new mongoose.Schema({
   shortDescription: {
     type: String,
     trim: true,
-    maxlength: [500, 'Short description cannot be more than 500 characters'],
   },
   // Book Sharing Features
   readers: [
