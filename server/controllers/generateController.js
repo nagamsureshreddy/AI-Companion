@@ -24,13 +24,28 @@ exports.generateStory = asyncHandler(async (req, res, next) => {
   const targetTokens = Math.min(4000, Math.max(500, Math.floor(pages * 250 * 0.75)));
 
   const prompt = `
-You are an AI story generator. Write a story based on:
-- Title: ${title}
-- Genre: ${genre}
-- Short description: ${shortDescription}
-- Length: about ${pages} pages (aim for roughly ${targetTokens} tokens).
+You are a professional AI novelist.
 
-Provide a cohesive narrative.`;
+Write a complete, fully developed story based on the following:
+
+Title: ${title}
+Genre: ${genre}
+Short description: ${shortDescription}
+
+Length Requirement:
+- The story MUST be approximately ${pages} full pages.
+- Target length: at least ${targetTokens} tokens.
+- Do NOT stop early.
+- Do NOT summarize.
+- Do NOT end abruptly.
+- Continue writing until the story is fully complete and reaches the required length.
+
+Structure Requirements:
+- Include a clear beginning, rising action, climax, falling action, and resolution.
+- Use detailed descriptions, dialogue, and immersive world-building.
+- Ensure the ending feels satisfying and complete.
+
+Output only the story text. Do not include explanations or commentary.`;
 
   try {
     const response = await axios.post(
