@@ -2,14 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import NewHeader from './components/NewHeader';
-import HeroSection from './components/HeroSection';
 import AuthSection from './components/AuthSection';
-import GenreSection from './components/GenreSection';
-import BookExplorationSection from './components/BookExplorationSection';
-import TestimonialsSection from './components/TestimonialsSection';
 import CreateStoryPage from './components/CreateStoryPage';
 import BookDetailPage from './components/BookDetailPage';
 import AllBooksPage from './components/AllBooksPage';
+import HomeShowcase from './components/HomeShowcase';
 import { bookService } from './services/api';
 import { getErrorMessage } from './utils/helpers';
 import './App.css';
@@ -109,17 +106,15 @@ function LandingPage() {
     <div className="App">
       <NewHeader />
       <main className="main-content">
-        <HeroSection />
-        <GenreSection onCreateBook={handleCreateBook} loading={loading} />
-        <BookExplorationSection
+        <HomeShowcase
           books={books}
           loading={loading}
           onStartReading={handleStartReading}
           onStopReading={handleStopReading}
           onShare={handleShareBook}
+          onCreateBook={handleCreateBook}
           isUserReadingBook={isUserReadingBook}
         />
-        <TestimonialsSection />
       </main>
     </div>
   );
@@ -131,7 +126,6 @@ function SignupPage() {
     <div className="App">
       <NewHeader />
       <main className="main-content">
-        <HeroSection />
         <AuthSection />
       </main>
     </div>
@@ -144,7 +138,6 @@ function LoginPage() {
     <div className="App">
       <NewHeader />
       <main className="main-content">
-        <HeroSection />
         <AuthSection defaultMode="login" />
       </main>
     </div>
