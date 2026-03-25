@@ -56,6 +56,24 @@ const BookDetailPage = () => {
               {book.content}
             </p>
           </div>
+          <div className="detail-block" id="reviews">
+            <h3>Reviews</h3>
+            {!book.ratings || book.ratings.length === 0 ? (
+              <p className="detail-muted">No reviews yet.</p>
+            ) : (
+              <div className="reviews-list">
+                {book.ratings.map((r, idx) => (
+                  <div key={idx} className="review-item">
+                    <p className="review-rating">⭐ {r.rating}</p>
+                    {r.review && <p className="review-text">{r.review}</p>}
+                    <p className="review-meta">
+                      {r.user?.name || r.user || 'Anonymous'}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </section>
       </main>
     </div>

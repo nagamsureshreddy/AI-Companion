@@ -63,6 +63,38 @@
   font-size: 1rem;
 }
 
+.detail-muted {
+  color: #6b7280;
+}
+
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.review-item {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0.75rem;
+  background: #f9fafb;
+}
+
+.review-rating {
+  margin: 0;
+  font-weight: 700;
+}
+
+.review-text {
+  margin: 0.35rem 0;
+}
+
+.review-meta {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
 .detail-loading,
 .detail-error {
   padding: 3rem;
