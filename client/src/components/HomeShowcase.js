@@ -126,6 +126,9 @@ const HomeShowcase = ({
                       <Link className="hs-btn link" to={`/book/${book._id}`}>
                         Read
                       </Link>
+                    <Link className="hs-btn ghost" to={`/book/${book._id}#reviews`}>
+                      Reviews
+                    </Link>
                       {onShare && (
                         <button
                           className="hs-btn ghost"
@@ -183,6 +186,9 @@ const HomeShowcase = ({
                       {reading ? '✓ Reading' : 'Read'}
                     </button>
                   )}
+                  <Link className="hs-btn ghost" to={`/book/${book._id}#reviews`}>
+                    Reviews
+                  </Link>
                   <Link className="hs-btn link" to={`/book/${book._id}`}>
                     Open
                   </Link>
