@@ -95,6 +95,49 @@
   font-size: 0.9rem;
 }
 
+.review-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.review-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  color: #1a202c;
+  font-weight: 600;
+}
+
+.review-form select,
+.review-form textarea {
+  padding: 0.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font: inherit;
+}
+
+.review-form textarea {
+  resize: vertical;
+}
+
+.review-submit {
+  align-self: flex-start;
+  padding: 0.55rem 1rem;
+  border: none;
+  background: #2563eb;
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.review-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 .detail-loading,
 .detail-error {
   padding: 3rem;
