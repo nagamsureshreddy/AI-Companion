@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import NewHeader from './NewHeader';
 import './BookDetailPage.css';
 import { bookService } from '../services/api';
@@ -7,6 +7,7 @@ import { getErrorMessage } from '../utils/helpers';
 
 const BookDetailPage = () => {
   const { id } = useParams();
+  const { hash } = useLocation();
   const [book, setBook] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -15,6 +16,21 @@ const BookDetailPage = () => {
   const [ratingInput, setRatingInput] = useState(5);
   const [reviewInput, setReviewInput] = useState('');
 
+  const ratingStats = (() => {
+    if (!reviews || reviews.length === 0) {
+      return { avg: 0, count: 0, buckets: [0, 0, 0, 0, 0] };
+    }
+    const count = reviews.length;
+    const total = reviews.reduce((sum, r) => sum + Number(r.rating || 0), 0);
+    const avg = (total / count).toFixed(1);
+    const buckets = [0, 0, 0, 0, 0]; // index 0 -> 1 star
+    reviews.forEach((r) => {
+      const v = Math.min(5, Math.max(1, Number(r.rating || 0)));
+      buckets[v - 1] += 1;
+    });
+    return { avg, count, buckets };
+  })();
+
   useEffect(() => {
     const fetchBook = async () => {
       try {
@@ -22,7 +38,8 @@ const BookDetailPage = () => {
         const response = await bookService.getById(id);
         setBook(response.data);
         const rev = await bookService.getReviews(id);
-        setReviews(rev.data || []);
+        const list = Array.isArray(rev.data) ? rev.data : [];
+        setReviews(list);
       } catch (err) {
         setError('Unable to load book.');
       } finally {
@@ -32,6 +49,19 @@ const BookDetailPage = () => {
     fetchBook();
   }, [id]);
 
+  // Scroll to anchored section (e.g., #reviews) after data is loaded
+  useEffect(() => {
+    if (!hash) return;
+    // slight delay to allow render
+    const t = setTimeout(() => {
+      const el = document.querySelector(hash);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 150);
+    return () => clearTimeout(t);
+  }, [hash, book]);
+
   const handleSubmitReview = async (e) => {
     e.preventDefault();
     if (!ratingInput) return;
@@ -39,7 +69,8 @@ const BookDetailPage = () => {
       setSubmitting(true);
       await bookService.rateBook(id, Number(ratingInput), reviewInput);
       const rev = await bookService.getReviews(id);
-      setReviews(rev.data || []);
+      const list = Array.isArray(rev.data) ? rev.data : [];
+      setReviews(list);
       setReviewInput('');
       setRatingInput(5);
     } catch (err) {
@@ -80,7 +111,36 @@ const BookDetailPage = () => {
               {book.content}
             </p>
           </div>
-          <div className="detail-block" id="reviews">
+          <div className="review-hero" id="reviews">
+            <div className="review-hero-left">
+              <p className="review-kicker">Reviews</p>
+              <h3 className="review-title">{book.title}</h3>
+              <p className="review-subtitle">Share your rating and thoughts.</p>
+            </div>
+            <div className="review-hero-right">
+              <div className="score-card">
+                <p className="score-label">User Score</p>
+                <div className="score-value">{ratingStats.count ? ratingStats.avg : '–'}</div>
+                <p className="score-meta">Based on {ratingStats.count} ratings</p>
+              </div>
+              <div className="score-distribution">
+                {[5,4,3,2,1].map((star, idx) => {
+                  const bucket = ratingStats.buckets[star - 1] || 0;
+                  const pct = ratingStats.count ? Math.round((bucket / ratingStats.count) * 100) : 0;
+                  return (
+                    <div key={star} className="dist-row">
+                      <span className="dist-label">{star}★</span>
+                      <div className="dist-bar">
+                        <div className="dist-fill" style={{ width: `${pct}%` }} />
+                      </div>
+                      <span className="dist-count">{bucket}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+          <div className="detail-block">
             <h3>Reviews</h3>
             <form className="review-form" onSubmit={handleSubmitReview}>
               <label>
