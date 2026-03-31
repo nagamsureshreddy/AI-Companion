@@ -20,75 +20,81 @@ exports.generateStory = asyncHandler(async (req, res, next) => {
     });
   }
 
-  const pageOutline =
+  const pageCount = Math.max(1, Math.min(20, Number(pages) || 1));
+  const outlines =
     Array.isArray(pageDescriptions) && pageDescriptions.length
-      ? pageDescriptions
-          .slice(0, pages)
-          .map((d, idx) => `Page ${idx + 1}: ${d || 'Describe this page.'}`)
-          .join('\n')
-      : shortDescription || 'Write a full story matching the genre and title.';
+      ? pageDescriptions.slice(0, pageCount)
+      : new Array(pageCount).fill(shortDescription || 'Continue the story.');
 
-  // Rough token target based on pages (assume ~250 words/page, ~0.75 tokens/word)
-  const targetTokens = Math.min(4000, Math.max(500, Math.floor(pages * 250 * 0.75)));
+  // Total token target and per-page allocation (assume ~250 words/page, ~0.75 tokens/word)
+  const totalTargetTokens = Math.min(4000, Math.max(500, Math.floor(pageCount * 250 * 0.75)));
+  const perPageTokens = Math.max(300, Math.floor(totalTargetTokens / pageCount));
 
-  const prompt = `
-You are a professional AI novelist.
+  const storyParts = [];
 
-Write a complete, fully developed story based on the following:
+  try {
+    for (let i = 0; i < pageCount; i++) {
+      const pageNum = i + 1;
+      const outline = outlines[i] || `Continue the story on page ${pageNum}.`;
+      const previousStory = storyParts.join('\n\n');
+      const recentContext = previousStory.slice(-2500); // keep prompt size reasonable
+
+      const pagePrompt =
+`You are a professional AI novelist writing a multi-page story.
 
 Title: ${title}
 Genre: ${genre}
-Outline per page:
-${pageOutline}
 
-Length Requirement:
-- The story MUST be approximately ${pages} full pages.
-- Target length: at least ${targetTokens} tokens.
-- Do NOT stop early.
-- Do NOT summarize.
-- Do NOT end abruptly.
-- Continue writing until the story is fully complete and reaches the required length.
+Page ${pageNum} of ${pageCount}
+Outline for this page:
+${outline}
 
-Structure Requirements:
-- Include a clear beginning, rising action, climax, falling action, and resolution.
-- Use detailed descriptions, dialogue, and immersive world-building.
-- Ensure the ending feels satisfying and complete.
+Story so far (for continuity, do NOT repeat, do NOT summarize):
+${previousStory ? recentContext : '[This is the first page. Start the story.]'}
 
-Output only the story text. Do not include explanations or commentary.`;
+Instructions for this page:
+- Continue directly from the previous page.
+- Do NOT recap the plot.
+- Do NOT end the story early unless this is the final page (${pageNum === pageCount ? 'yes, final page' : 'no, more pages remain'}).
+- Match tone and pacing; keep the narrative flowing.
+- Use approximately ${perPageTokens} tokens (about one page).`;
 
-  try {
-    const response = await axios.post(
-      'https://api.deepseek.com/chat/completions',
-      {
-        model: 'deepseek-chat',
-        messages: [
-          { role: 'system', content: 'You are a helpful story writing assistant.' },
-          { role: 'user', content: prompt },
-        ],
-        temperature: 0.7,
-        max_tokens: targetTokens,
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${apiKey}`,
+      const response = await axios.post(
+        'https://api.deepseek.com/chat/completions',
+        {
+          model: 'deepseek-chat',
+          messages: [
+            { role: 'system', content: 'You are a helpful story writing assistant.' },
+            { role: 'user', content: pagePrompt },
+          ],
+          temperature: 0.7,
+          max_tokens: perPageTokens,
         },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${apiKey}`,
+          },
+        }
+      );
+
+      const pageContent = response.data?.choices?.[0]?.message?.content || '';
+      if (!pageContent) {
+        return res.status(500).json({
+          success: false,
+          message: `No story content returned for page ${pageNum}`,
+        });
       }
-    );
 
-    const content = response.data?.choices?.[0]?.message?.content || '';
-
-    if (!content) {
-      return res.status(500).json({
-        success: false,
-        message: 'No story content returned from AI',
-      });
+      storyParts.push(pageContent.trim());
     }
+
+    const fullStory = storyParts.join('\n\n');
 
     return res.json({
       success: true,
       data: {
-        content,
+        content: fullStory,
       },
     });
   } catch (error) {
