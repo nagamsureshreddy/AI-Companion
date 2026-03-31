@@ -3,12 +3,12 @@ const asyncHandler = require('../middleware/asyncHandler');
 
 // Generate story content using Deepseek API
 exports.generateStory = asyncHandler(async (req, res, next) => {
-  const { title, shortDescription, genre, pages } = req.body;
+  const { title, shortDescription, genre, pages, pageDescriptions } = req.body;
 
-  if (!title || !shortDescription || !genre || !pages) {
+  if (!title || !genre || !pages) {
     return res.status(400).json({
       success: false,
-      message: 'Please provide title, shortDescription, genre, and pages',
+      message: 'Please provide title, genre, and pages',
     });
   }
 
@@ -20,6 +20,14 @@ exports.generateStory = asyncHandler(async (req, res, next) => {
     });
   }
 
+  const pageOutline =
+    Array.isArray(pageDescriptions) && pageDescriptions.length
+      ? pageDescriptions
+          .slice(0, pages)
+          .map((d, idx) => `Page ${idx + 1}: ${d || 'Describe this page.'}`)
+          .join('\n')
+      : shortDescription || 'Write a full story matching the genre and title.';
+
   // Rough token target based on pages (assume ~250 words/page, ~0.75 tokens/word)
   const targetTokens = Math.min(4000, Math.max(500, Math.floor(pages * 250 * 0.75)));
 
@@ -30,7 +38,8 @@ Write a complete, fully developed story based on the following:
 
 Title: ${title}
 Genre: ${genre}
-Short description: ${shortDescription}
+Outline per page:
+${pageOutline}
 
 Length Requirement:
 - The story MUST be approximately ${pages} full pages.

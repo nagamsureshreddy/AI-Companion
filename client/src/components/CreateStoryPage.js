@@ -32,9 +32,9 @@ const CreateStoryPage = () => {
   const [form, setForm] = useState({
     title: '',
     genre: '',
-    shortDescription: '',
     pages: 1,
   });
+  const [pageDescriptions, setPageDescriptions] = useState(['']);
   const [imageFile, setImageFile] = useState(null);
 
   useEffect(() => {
@@ -46,7 +46,29 @@ const CreateStoryPage = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    if (name === 'pages') {
+      const pages = Math.max(1, Math.min(20, Number(value) || 1));
+      setForm((prev) => ({ ...prev, pages }));
+      setPageDescriptions((prev) => {
+        const next = [...prev];
+        if (pages > next.length) {
+          while (next.length < pages) next.push('');
+        } else if (pages < next.length) {
+          next.length = pages;
+        }
+        return next;
+      });
+    } else {
+      setForm((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handlePageDescriptionChange = (idx, value) => {
+    setPageDescriptions((prev) => {
+      const next = [...prev];
+      next[idx] = value;
+      return next;
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -60,20 +82,23 @@ const CreateStoryPage = () => {
       setLoading(true);
       const payload = {
         title: form.title,
-        shortDescription: form.shortDescription,
         genre: form.genre || 'Fiction',
         pages: Number(form.pages) || 1,
+        pageDescriptions,
       };
 
       // Generate story content via backend AI
       const generated = await bookService.generateStory(payload);
-      const content = generated?.data?.content || form.shortDescription || form.title;
+      const content =
+        generated?.data?.content ||
+        pageDescriptions.join('\n\n') ||
+        form.title;
 
       const created = await bookService.create({
         title: form.title,
         genre: form.genre || 'Fiction',
         content,
-        shortDescription: form.shortDescription,
+        shortDescription: pageDescriptions[0] || '',
       });
 
       // Upload image if provided
@@ -99,7 +124,7 @@ const CreateStoryPage = () => {
       <main className="create-story-main">
         <section className="create-story-hero">
           <p className="hero-text">
-            Bring your creativity and create the book. Craft a title, choose a genre, and add your story.
+            Provide a per-page outline (4-5 lines each). The AI will write a complete story with the desired number of pages.
           </p>
         </section>
 
@@ -136,17 +161,6 @@ const CreateStoryPage = () => {
               </div>
 
               <div className="form-group">
-                <label>Short description</label>
-                <textarea
-                  name="shortDescription"
-                  value={form.shortDescription}
-                  onChange={handleChange}
-                  rows="3"
-                  placeholder="One or two sentences to summarize your story"
-                />
-              </div>
-
-              <div className="form-group">
                 <label>Number of pages</label>
                 <input
                   type="number"
@@ -159,6 +173,19 @@ const CreateStoryPage = () => {
                   placeholder="Choose how many pages to generate"
                 />
               </div>
+
+              {pageDescriptions.map((desc, idx) => (
+                <div className="form-group" key={idx}>
+                  <label>Page {idx + 1} description</label>
+                  <textarea
+                    value={desc}
+                    onChange={(e) => handlePageDescriptionChange(idx, e.target.value)}
+                    rows="3"
+                    placeholder="Describe this page (4-5 lines)."
+                    required
+                  />
+                </div>
+              ))}
 
               <div className="form-group">
                 <label>Image (optional)</label>
