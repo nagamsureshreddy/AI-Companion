@@ -17,7 +17,7 @@ const BookDetailPage = () => {
   const [reviewInput, setReviewInput] = useState('');
 
   const ratingStats = (() => {
-    if (!reviews || reviews.length === 0) {
+    if (!reviews || !Array.isArray(reviews) || reviews.length === 0) {
       return { avg: 0, count: 0, buckets: [0, 0, 0, 0, 0] };
     }
     const count = reviews.length;
@@ -38,7 +38,11 @@ const BookDetailPage = () => {
         const response = await bookService.getById(id);
         setBook(response.data);
         const rev = await bookService.getReviews(id);
-        const list = Array.isArray(rev.data) ? rev.data : [];
+        const list = Array.isArray(rev.data?.reviews)
+          ? rev.data.reviews
+          : Array.isArray(rev.data)
+          ? rev.data
+          : [];
         setReviews(list);
       } catch (err) {
         setError('Unable to load book.');
@@ -69,7 +73,11 @@ const BookDetailPage = () => {
       setSubmitting(true);
       await bookService.rateBook(id, Number(ratingInput), reviewInput);
       const rev = await bookService.getReviews(id);
-      const list = Array.isArray(rev.data) ? rev.data : [];
+      const list = Array.isArray(rev.data?.reviews)
+        ? rev.data.reviews
+        : Array.isArray(rev.data)
+        ? rev.data
+        : [];
       setReviews(list);
       setReviewInput('');
       setRatingInput(5);
